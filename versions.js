@@ -3,5 +3,4 @@ var DOC_VERSIONS = [
   "latest",
   "release-0.4",
   "v0.4.0",
-  "v0.4",
 ];
