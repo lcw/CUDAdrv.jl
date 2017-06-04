@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Usage",
     "category": "section",
-    "text": "WIP"
+    "text": "Quick start:DocTestSetup = quote\n    using CUDAdrv\nenddev = CuDevice(0);\nctx = CuContext(dev);\n\ndestroy!(ctx)\n\n# output\n"
 },
 
 {
@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.name",
     "category": "Method",
-    "text": "name(err::CuError)\n\nGets the string representation of an error code.\n\nThis name can often be used as a symbol in source code to get an instance of this error.\n\n\n\n"
+    "text": "name(err::CuError)\n\nGets the string representation of an error code.\n\nThis name can often be used as a symbol in source code to get an instance of this error. For example:\n\njulia> using CUDAdrv\n\njulia> err = CuError(1)\nCuError(1, ERROR_INVALID_VALUE)\n\njulia> name(err)\n\"ERROR_INVALID_VALUE\"\n\njulia> CUDAdrv.ERROR_INVALID_VALUE\nCuError(1, ERROR_INVALID_VALUE)\n\n\n\n"
 },
 
 {
