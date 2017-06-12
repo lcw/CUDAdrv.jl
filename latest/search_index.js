@@ -369,7 +369,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#Base.eltype-Union{Tuple{CUDAdrv.CuGlobal{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#Base.eltype-Tuple{CUDAdrv.CuGlobal}",
     "page": "API wrappers",
     "title": "Base.eltype",
     "category": "Method",
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#Base.get-Union{Tuple{CUDAdrv.CuGlobal{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#Base.get-Tuple{CUDAdrv.CuGlobal}",
     "page": "API wrappers",
     "title": "Base.get",
     "category": "Method",
@@ -397,7 +397,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Global Variable Management",
     "category": "section",
-    "text": "CUDAdrv.CuGlobal\nCUDAdrv.eltype{T}(::CuGlobal{T})\nCUDAdrv.get{T}(::CuGlobal{T})\nCUDAdrv.set{T}(::CuGlobal{T}, ::T)"
+    "text": "CUDAdrv.CuGlobal\nCUDAdrv.eltype(::CuGlobal)\nCUDAdrv.get(::CuGlobal)\nCUDAdrv.set{T}(::CuGlobal{T}, ::T)"
 },
 
 {
@@ -469,7 +469,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free for that.\n\n\n\n"
+    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
 },
 
 {
@@ -481,10 +481,42 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.set-Tuple{CUDAdrv.DevicePtr,UInt32,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.info",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.info",
+    "category": "Function",
+    "text": "info()\n\nReturns a tuple of two integers, indicating respectively the free and total amount of memory (in bytes) available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.total",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.total",
+    "category": "Function",
+    "text": "total()\n\nReturns the total amount of memory (in bytes), available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.used",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.used",
+    "category": "Function",
+    "text": "used()\n\nReturns the used amount of memory (in bytes), allocated by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.free-Tuple{}",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.free",
+    "category": "Method",
+    "text": "free()\n\nReturns the free amount of memory (in bytes), available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.set",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.set",
-    "category": "Method",
+    "category": "Function",
     "text": "set(p::DevicePtr, value::Cuint, len::Integer)\n\nInitializes device memory, copying the value val for len times.\n\n\n\n"
 },
 
@@ -505,10 +537,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.transfer-Tuple{CUDAdrv.DevicePtr,CUDAdrv.DevicePtr,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.transfer",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.transfer",
-    "category": "Method",
+    "category": "Function",
     "text": "download(dst::DevicePtr, src, nbytes::Integer)\n\nTransfer nbytes of device memory from src to dst.\n\n\n\n"
 },
 
@@ -517,15 +549,15 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Pointer-based (low-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::DevicePtr)\nCUDAdrv.Mem.set(::DevicePtr, ::Cuint, ::Integer)\nCUDAdrv.Mem.upload(::DevicePtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::DevicePtr, ::Integer)\nCUDAdrv.Mem.transfer(::DevicePtr, ::DevicePtr, ::Integer)"
+    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::DevicePtr)\nCUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()\nCUDAdrv.Mem.set\nCUDAdrv.Mem.upload(::DevicePtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::DevicePtr, ::Integer)\nCUDAdrv.Mem.transfer"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.alloc-Union{Tuple{Type{T},Integer}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{Type,Integer}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free for that.\n\n\n\n"
+    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
 },
 
 {
@@ -537,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.download-Union{Tuple{CUDAdrv.DevicePtr{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{CUDAdrv.DevicePtr}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.download",
     "category": "Method",
@@ -549,7 +581,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Object-based (high-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc{T}(::Type{T}, ::Integer)\nCUDAdrv.Mem.upload{T}(::DevicePtr{T}, ::T)\nCUDAdrv.Mem.download{T}(::DevicePtr{T})"
+    "text": "CUDAdrv.Mem.alloc(::Type, ::Integer)\nCUDAdrv.Mem.upload{T}(::DevicePtr{T}, ::T)\nCUDAdrv.Mem.download(::DevicePtr)"
 },
 
 {
@@ -633,6 +665,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/api.html#CUDAdrv.CuDim3",
+    "page": "API wrappers",
+    "title": "CUDAdrv.CuDim3",
+    "category": "Type",
+    "text": "CuDim3(x)\n\nCuDim3((x,))\nCuDim3((x, y))\nCuDim3((x, y, x))\n\nA type used to specify dimensions, consisting of 3 integers for respectively the x, y and z dimension. Unspecified dimensions default to 1.\n\nOften accepted as argument through the CuDim type alias, eg. in the case of cudacall, allowing to pass dimensions as a plain integer or tuple without having to construct an explicit CuDim3 object.\n\n\n\n"
+},
+
+{
     "location": "lib/api.html#CUDAdrv.cudacall",
     "page": "API wrappers",
     "title": "CUDAdrv.cudacall",
@@ -653,7 +693,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Execution Control",
     "category": "section",
-    "text": "CUDAdrv.cudacall\nCUDAdrv.launch"
+    "text": "CUDAdrv.CuDim3\nCUDAdrv.cudacall\nCUDAdrv.launch"
 },
 
 {
