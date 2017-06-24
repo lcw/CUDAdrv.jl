@@ -21,23 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "Requirements:Julia 0.5 or higher (use v0.1.0 of this package for compatibility with Julia 0.4)\nNVIDIA driver, providing libcuda.so (the full CUDA toolkit is not required)\nCUDA hardwareAt the Julia REPL:Pkg.add(\"CUDAdrv\")\nPkg.test(\"CUDAdrv\")If you get an error ERROR_NO_DEVICE (No CUDA-capable device) upon loading CUDAdrv.jl, CUDA could not detect any capable GPU. It probably means that your GPU isn't supported by the CUDA/NVIDIA driver loaded by CUDAdrv.jl, or that your set-up is damaged in some way. Please make sure that (1) your GPU is supported by the current driver (you might need the so-called legacy driver, refer to the CUDA installation instructions for your platform), and (2) CUDAdrv.jl targets the correct driver library (check the libcuda_path variable in CUDAdrv/deps/ext.jl, or run Pkg.build with the DEBUG environment variable set to 1)."
-},
-
-{
-    "location": "index.html#Manual-Outline-1",
-    "page": "Home",
-    "title": "Manual Outline",
-    "category": "section",
-    "text": "Pages = [\n    \"man/usage.md\"\n]"
-},
-
-{
-    "location": "index.html#Library-Outline-1",
-    "page": "Home",
-    "title": "Library Outline",
-    "category": "section",
-    "text": "Pages = [\n    \"lib/api.md\",\n    \"lib/array.md\"\n]"
+    "text": "Requirements:Julia 0.5 or higher (use v0.1.0 of this package for compatibility with Julia 0.4)\nNVIDIA driver, providing libcuda.so (the full CUDA toolkit is not required)\nCUDA hardwareAt the Julia REPL:Pkg.add(\"CUDAdrv\")\nPkg.test(\"CUDAdrv\")CUDAdrv can throw errors during build. These errors tend to be cryptic, as the library isn't loaded yet and we can't look-up the string for a given error code. Common errors include:Code 999 (UNKNOWN_ERROR): this often indicates that your set-up is broken, eg. because you didn't load the correct, or any, kernel module. Please verify your set-up, on Linux by executing nvidia-smi or on other platforms by compiling and running CUDA C code using nvcc.\nCode 100 (ERROR_NO_DEVICE): CUDA didn't detect your device, because it is not supported by CUDA or because you loaded the wrong kernel driver (eg. legacy when you need regular, or vice-versa). CUDAdrv cannot work in this case, because CUDA does not allow us to query the driver version without a valid device, something we need in order to version the API calls.\nCode -1 (not a valid CUDA error): this error shouldn't ever be thrown by any CUDA API function. Possibly, CUDAdrv might have selected the library stubs instead, which always return -1. Please run the build script with DEBUG=1 and file a bug report."
 },
 
 {
@@ -53,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Usage",
     "category": "section",
-    "text": "WIP"
+    "text": "Quick start:DocTestSetup = quote\n    using CUDAdrv\nenddev = CuDevice(0);\nctx = CuContext(dev);\n\ndestroy!(ctx)\n\n# output\n"
 },
 
 {
@@ -133,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.name",
     "category": "Method",
-    "text": "name(err::CuError)\n\nGets the string representation of an error code.\n\nThis name can often be used as a symbol in source code to get an instance of this error.\n\n\n\n"
+    "text": "name(err::CuError)\n\nGets the string representation of an error code.\n\nThis name can often be used as a symbol in source code to get an instance of this error. For example:\n\njulia> using CUDAdrv\n\njulia> err = CuError(1)\nCuError(1, ERROR_INVALID_VALUE)\n\njulia> name(err)\n\"ERROR_INVALID_VALUE\"\n\njulia> CUDAdrv.ERROR_INVALID_VALUE\nCuError(1, ERROR_INVALID_VALUE)\n\n\n\n"
 },
 
 {
@@ -301,7 +285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.CuPrimaryContext",
     "category": "Type",
-    "text": "CuPrimaryContext(dev::Int)\n\nCreate a primary CUDA context for a given device.\n\nEach primary context is unique per device and is shared with CUDA runtime API. It is meant for interoperability with (applications using) the runtime API.\n\n\n\n"
+    "text": "CuPrimaryContext(dev::CuDevice)\n\nCreate a primary CUDA context for a given device.\n\nEach primary context is unique per device and is shared with CUDA runtime API. It is meant for interoperability with (applications using) the runtime API.\n\n\n\n"
 },
 
 {
@@ -337,11 +321,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/api.html#CUDAdrv.unsafe_reset!-Tuple{CUDAdrv.CuPrimaryContext,Bool}",
+    "page": "API wrappers",
+    "title": "CUDAdrv.unsafe_reset!",
+    "category": "Method",
+    "text": "unsafe_reset!(pctx::CuPrimaryContext, [checked::Bool=true])\n\nExplicitly destroys and cleans up all resources associated with a device's primary context in the current process. Note that this forcibly invalidates all contexts derived from this primary context, and as a result outstanding resources might become invalid.\n\nIt is normally unnecessary to call this function, as resource are automatically freed when contexts go out of scope. In the case of primary contexts, they are collected when all contexts derived from that primary context have gone out of scope.\n\nThe checked argument determines whether to verify that the primary context has become inactive after resetting the derived driver contexts. This may not be possible, eg. if the CUDA runtime API itself has retained an additional context instance.\n\n\n\n"
+},
+
+{
     "location": "lib/api.html#Primary-Context-Management-1",
     "page": "API wrappers",
     "title": "Primary Context Management",
     "category": "section",
-    "text": "CUDAdrv.CuPrimaryContext\nCUDAdrv.CuContext(::CuPrimaryContext)\nCUDAdrv.isactive(::CuPrimaryContext)\nCUDAdrv.flags(::CuPrimaryContext)\nCUDAdrv.setflags!(::CuPrimaryContext, ::CUDAdrv.CUctx_flags)"
+    "text": "CUDAdrv.CuPrimaryContext\nCUDAdrv.CuContext(::CuPrimaryContext)\nCUDAdrv.isactive(::CuPrimaryContext)\nCUDAdrv.flags(::CuPrimaryContext)\nCUDAdrv.setflags!(::CuPrimaryContext, ::CUDAdrv.CUctx_flags)\nCUDAdrv.unsafe_reset!(::CuPrimaryContext, ::Bool)"
 },
 
 {
@@ -385,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#Base.eltype-Union{Tuple{CUDAdrv.CuGlobal{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#Base.eltype-Tuple{CUDAdrv.CuGlobal}",
     "page": "API wrappers",
     "title": "Base.eltype",
     "category": "Method",
@@ -393,7 +385,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#Base.get-Union{Tuple{CUDAdrv.CuGlobal{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#Base.get-Tuple{CUDAdrv.CuGlobal}",
     "page": "API wrappers",
     "title": "Base.get",
     "category": "Method",
@@ -413,7 +405,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Global Variable Management",
     "category": "section",
-    "text": "CUDAdrv.CuGlobal\nCUDAdrv.eltype{T}(::CuGlobal{T})\nCUDAdrv.get{T}(::CuGlobal{T})\nCUDAdrv.set{T}(::CuGlobal{T}, ::T)"
+    "text": "CUDAdrv.CuGlobal\nCUDAdrv.eltype(::CuGlobal)\nCUDAdrv.get(::CuGlobal)\nCUDAdrv.set{T}(::CuGlobal{T}, ::T)"
 },
 
 {
@@ -485,7 +477,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free for that.\n\n\n\n"
+    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
 },
 
 {
@@ -497,10 +489,42 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.set-Tuple{CUDAdrv.DevicePtr,UInt32,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.info",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.info",
+    "category": "Function",
+    "text": "info()\n\nReturns a tuple of two integers, indicating respectively the free and total amount of memory (in bytes) available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.total",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.total",
+    "category": "Function",
+    "text": "total()\n\nReturns the total amount of memory (in bytes), available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.used",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.used",
+    "category": "Function",
+    "text": "used()\n\nReturns the used amount of memory (in bytes), allocated by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.free-Tuple{}",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.free",
+    "category": "Method",
+    "text": "free()\n\nReturns the free amount of memory (in bytes), available for allocation by the CUDA context.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.set",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.set",
-    "category": "Method",
+    "category": "Function",
     "text": "set(p::DevicePtr, value::Cuint, len::Integer)\n\nInitializes device memory, copying the value val for len times.\n\n\n\n"
 },
 
@@ -521,10 +545,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.transfer-Tuple{CUDAdrv.DevicePtr,CUDAdrv.DevicePtr,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.transfer",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.transfer",
-    "category": "Method",
+    "category": "Function",
     "text": "download(dst::DevicePtr, src, nbytes::Integer)\n\nTransfer nbytes of device memory from src to dst.\n\n\n\n"
 },
 
@@ -533,15 +557,15 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Pointer-based (low-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::DevicePtr)\nCUDAdrv.Mem.set(::DevicePtr, ::Cuint, ::Integer)\nCUDAdrv.Mem.upload(::DevicePtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::DevicePtr, ::Integer)\nCUDAdrv.Mem.transfer(::DevicePtr, ::DevicePtr, ::Integer)"
+    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::DevicePtr)\nCUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()\nCUDAdrv.Mem.set\nCUDAdrv.Mem.upload(::DevicePtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::DevicePtr, ::Integer)\nCUDAdrv.Mem.transfer"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.alloc-Union{Tuple{Type{T},Integer}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{Type,Integer}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free for that.\n\n\n\n"
+    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
 },
 
 {
@@ -553,7 +577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.download-Union{Tuple{CUDAdrv.DevicePtr{T}}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{CUDAdrv.DevicePtr}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.download",
     "category": "Method",
@@ -565,7 +589,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Object-based (high-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc{T}(::Type{T}, ::Integer)\nCUDAdrv.Mem.upload{T}(::DevicePtr{T}, ::T)\nCUDAdrv.Mem.download{T}(::DevicePtr{T})"
+    "text": "CUDAdrv.Mem.alloc(::Type, ::Integer)\nCUDAdrv.Mem.upload{T}(::DevicePtr{T}, ::T)\nCUDAdrv.Mem.download(::DevicePtr)"
 },
 
 {
@@ -649,11 +673,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/api.html#CUDAdrv.CuDim3",
+    "page": "API wrappers",
+    "title": "CUDAdrv.CuDim3",
+    "category": "Type",
+    "text": "CuDim3(x)\n\nCuDim3((x,))\nCuDim3((x, y))\nCuDim3((x, y, x))\n\nA type used to specify dimensions, consisting of 3 integers for respectively the x, y and z dimension. Unspecified dimensions default to 1.\n\nOften accepted as argument through the CuDim type alias, eg. in the case of cudacall or launch, allowing to pass dimensions as a plain integer or a tuple without having to construct an explicit CuDim3 object.\n\n\n\n"
+},
+
+{
     "location": "lib/api.html#CUDAdrv.cudacall",
     "page": "API wrappers",
     "title": "CUDAdrv.cudacall",
     "category": "Function",
-    "text": "cudacall(f::CuFunction, griddim, blockdim, types, values; shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim, blockdim, shmem::Integer, stream::CuStream, types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (DevicePtr{Cfloat},DevicePtr{Cfloat},DevicePtr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being faster. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
+    "text": "cudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim, types, values;\n         shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim,\n         shmem::Integer, stream::CuStream,\n         types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (DevicePtr{Cfloat},DevicePtr{Cfloat},DevicePtr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
 },
 
 {
@@ -661,7 +693,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.launch",
     "category": "Function",
-    "text": "launch(f::CuFunction, griddim::CuDim3, blockdim::CuDim3, shmem::Int, stream::CuStream, (args...))\n\nLow-level call to launch a CUDA function f on the GPU, using griddim and blockdim as respectively the grid and block configuration. Dynamic shared memory is allocated according to shmem, and the kernel is launched on stream stream.\n\nArguments to a kernel should either be bitstype, in which case they will be copied to the internal kernel parameter buffer, or a pointer to device memory.\n\nThis is a low-level call, prefer to use cudacall instead.\n\n\n\n"
+    "text": "launch(f::CuFunction, griddim::CuDim, blockdim::CuDim, args...;\n       shmem=0, stream=CuDefaultStream())\nlaunch(f::CuFunction, griddim::CuDim, blockdim::CuDim, shmem::Int, stream::CuStream, args...)\n\nLow-level call to launch a CUDA function f on the GPU, using griddim and blockdim as respectively the grid and block configuration. Dynamic shared memory is allocated according to shmem, and the kernel is launched on stream stream.\n\nArguments to a kernel should either be bitstype, in which case they will be copied to the internal kernel parameter buffer, or a pointer to device memory.\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments.\n\nThis is a low-level call, prefer to use cudacall instead.\n\n\n\n"
 },
 
 {
@@ -669,7 +701,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Execution Control",
     "category": "section",
-    "text": "CUDAdrv.cudacall\nCUDAdrv.launch"
+    "text": "CUDAdrv.CuDim3\nCUDAdrv.cudacall\nCUDAdrv.launch"
 },
 
 {
