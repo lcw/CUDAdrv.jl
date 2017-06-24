@@ -285,7 +285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.CuPrimaryContext",
     "category": "Type",
-    "text": "CuPrimaryContext(dev::Int)\n\nCreate a primary CUDA context for a given device.\n\nEach primary context is unique per device and is shared with CUDA runtime API. It is meant for interoperability with (applications using) the runtime API.\n\n\n\n"
+    "text": "CuPrimaryContext(dev::CuDevice)\n\nCreate a primary CUDA context for a given device.\n\nEach primary context is unique per device and is shared with CUDA runtime API. It is meant for interoperability with (applications using) the runtime API.\n\n\n\n"
 },
 
 {
@@ -321,11 +321,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/api.html#CUDAdrv.unsafe_reset!-Tuple{CUDAdrv.CuPrimaryContext,Bool}",
+    "page": "API wrappers",
+    "title": "CUDAdrv.unsafe_reset!",
+    "category": "Method",
+    "text": "unsafe_reset!(pctx::CuPrimaryContext, [checked::Bool=true])\n\nExplicitly destroys and cleans up all resources associated with a device's primary context in the current process. Note that this forcibly invalidates all contexts derived from this primary context, and as a result outstanding resources might become invalid.\n\nIt is normally unnecessary to call this function, as resource are automatically freed when contexts go out of scope. In the case of primary contexts, they are collected when all contexts derived from that primary context have gone out of scope.\n\nThe checked argument determines whether to verify that the primary context has become inactive after resetting the derived driver contexts. This may not be possible, eg. if the CUDA runtime API itself has retained an additional context instance.\n\n\n\n"
+},
+
+{
     "location": "lib/api.html#Primary-Context-Management-1",
     "page": "API wrappers",
     "title": "Primary Context Management",
     "category": "section",
-    "text": "CUDAdrv.CuPrimaryContext\nCUDAdrv.CuContext(::CuPrimaryContext)\nCUDAdrv.isactive(::CuPrimaryContext)\nCUDAdrv.flags(::CuPrimaryContext)\nCUDAdrv.setflags!(::CuPrimaryContext, ::CUDAdrv.CUctx_flags)"
+    "text": "CUDAdrv.CuPrimaryContext\nCUDAdrv.CuContext(::CuPrimaryContext)\nCUDAdrv.isactive(::CuPrimaryContext)\nCUDAdrv.flags(::CuPrimaryContext)\nCUDAdrv.setflags!(::CuPrimaryContext, ::CUDAdrv.CUctx_flags)\nCUDAdrv.unsafe_reset!(::CuPrimaryContext, ::Bool)"
 },
 
 {
