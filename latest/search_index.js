@@ -677,7 +677,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.CuDim3",
     "category": "Type",
-    "text": "CuDim3(x)\n\nCuDim3((x,))\nCuDim3((x, y))\nCuDim3((x, y, x))\n\nA type used to specify dimensions, consisting of 3 integers for respectively the x, y and z dimension. Unspecified dimensions default to 1.\n\nOften accepted as argument through the CuDim type alias, eg. in the case of cudacall, allowing to pass dimensions as a plain integer or tuple without having to construct an explicit CuDim3 object.\n\n\n\n"
+    "text": "CuDim3(x)\n\nCuDim3((x,))\nCuDim3((x, y))\nCuDim3((x, y, x))\n\nA type used to specify dimensions, consisting of 3 integers for respectively the x, y and z dimension. Unspecified dimensions default to 1.\n\nOften accepted as argument through the CuDim type alias, eg. in the case of cudacall or launch, allowing to pass dimensions as a plain integer or a tuple without having to construct an explicit CuDim3 object.\n\n\n\n"
 },
 
 {
@@ -685,7 +685,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.cudacall",
     "category": "Function",
-    "text": "cudacall(f::CuFunction, griddim, blockdim, types, values; shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim, blockdim, shmem::Integer, stream::CuStream, types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (DevicePtr{Cfloat},DevicePtr{Cfloat},DevicePtr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being faster. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
+    "text": "cudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim, types, values;\n         shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim,\n         shmem::Integer, stream::CuStream,\n         types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (DevicePtr{Cfloat},DevicePtr{Cfloat},DevicePtr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
 },
 
 {
@@ -693,7 +693,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.launch",
     "category": "Function",
-    "text": "launch(f::CuFunction, griddim::CuDim3, blockdim::CuDim3, shmem::Int, stream::CuStream, (args...))\n\nLow-level call to launch a CUDA function f on the GPU, using griddim and blockdim as respectively the grid and block configuration. Dynamic shared memory is allocated according to shmem, and the kernel is launched on stream stream.\n\nArguments to a kernel should either be bitstype, in which case they will be copied to the internal kernel parameter buffer, or a pointer to device memory.\n\nThis is a low-level call, prefer to use cudacall instead.\n\n\n\n"
+    "text": "launch(f::CuFunction, griddim::CuDim, blockdim::CuDim, args...;\n       shmem=0, stream=CuDefaultStream())\nlaunch(f::CuFunction, griddim::CuDim, blockdim::CuDim, shmem::Int, stream::CuStream, args...)\n\nLow-level call to launch a CUDA function f on the GPU, using griddim and blockdim as respectively the grid and block configuration. Dynamic shared memory is allocated according to shmem, and the kernel is launched on stream stream.\n\nArguments to a kernel should either be bitstype, in which case they will be copied to the internal kernel parameter buffer, or a pointer to device memory.\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments.\n\nThis is a low-level call, prefer to use cudacall instead.\n\n\n\n"
 },
 
 {
