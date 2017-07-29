@@ -477,15 +477,15 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
+    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free(::OwnedPtr) for that.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.free-Tuple{CUDAdrv.DevicePtr}",
+    "location": "lib/api.html#CUDAdrv.Mem.free-Tuple{CUDAdrv.OwnedPtr}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.free",
     "category": "Method",
-    "text": "free(p::DevicePtr)\n\nFrees device memory.\n\n\n\n"
+    "text": "free(p::OwnedPtr)\n\nFrees device memory.\n\n\n\n"
 },
 
 {
@@ -525,23 +525,23 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.set",
     "category": "Function",
-    "text": "set(p::DevicePtr, value::Cuint, len::Integer)\n\nInitializes device memory, copying the value val for len times.\n\n\n\n"
+    "text": "set(p::OwnedPtr, value::Cuint, len::Integer)\n\nInitializes device memory, copying the value val for len times.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.upload-Tuple{CUDAdrv.DevicePtr,Ref,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.upload-Tuple{CUDAdrv.OwnedPtr,Ref,Integer}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.upload",
     "category": "Method",
-    "text": "upload(dst::DevicePtr, src, nbytes::Integer)\n\nUpload nbytes memory from src at the host to dst on the device.\n\n\n\n"
+    "text": "upload(dst::OwnedPtr, src, nbytes::Integer)\n\nUpload nbytes memory from src at the host to dst on the device.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{Ref,CUDAdrv.DevicePtr,Integer}",
+    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{Ref,CUDAdrv.OwnedPtr,Integer}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.download",
     "category": "Method",
-    "text": "download(dst::DevicePtr, src, nbytes::Integer)\n\nDownload nbytes memory from src on the device to src on the host.\n\n\n\n"
+    "text": "download(dst::OwnedPtr, src, nbytes::Integer)\n\nDownload nbytes memory from src on the device to src on the host.\n\n\n\n"
 },
 
 {
@@ -549,7 +549,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.transfer",
     "category": "Function",
-    "text": "download(dst::DevicePtr, src, nbytes::Integer)\n\nTransfer nbytes of device memory from src to dst.\n\n\n\n"
+    "text": "download(dst::OwnedPtr, src, nbytes::Integer)\n\nTransfer nbytes of device memory from src to dst.\n\n\n\n"
 },
 
 {
@@ -557,7 +557,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Pointer-based (low-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::DevicePtr)\nCUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()\nCUDAdrv.Mem.set\nCUDAdrv.Mem.upload(::DevicePtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::DevicePtr, ::Integer)\nCUDAdrv.Mem.transfer"
+    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::CUDAdrv.OwnedPtr)\nCUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()\nCUDAdrv.Mem.set\nCUDAdrv.Mem.upload(::CUDAdrv.OwnedPtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::CUDAdrv.OwnedPtr, ::Integer)\nCUDAdrv.Mem.transfer"
 },
 
 {
@@ -565,23 +565,23 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free(::DevicePtr) for that.\n\n\n\n"
+    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free(::OwnedPtr) for that.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.upload-Union{Tuple{CUDAdrv.DevicePtr{T},T}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.upload-Union{Tuple{CUDAdrv.OwnedPtr{T},T}, Tuple{T}} where T",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.upload",
     "category": "Method",
-    "text": "upload{T}(src::T)\nupload{T}(dst::DevicePtr{T}, src::T)\n\nUpload an object src from the host to the device. If a destination dst is not provided, new memory is allocated and uploaded to.\n\nNote this does only upload the object itself, and does not peek through it in order to get to the underlying data (like Ref does). Consequently, this functionality should not be used to transfer eg. arrays, use CuArray's copy! functionality for that.\n\n\n\n"
+    "text": "upload{T}(src::T)\nupload{T}(dst::OwnedPtr{T}, src::T)\n\nUpload an object src from the host to the device. If a destination dst is not provided, new memory is allocated and uploaded to.\n\nNote this does only upload the object itself, and does not peek through it in order to get to the underlying data (like Ref does). Consequently, this functionality should not be used to transfer eg. arrays, use CuArray's copy! functionality for that.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{CUDAdrv.DevicePtr}",
+    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{CUDAdrv.OwnedPtr}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.download",
     "category": "Method",
-    "text": "download{T}(src::DevicePtr{T})\n\nDownload an object src from the device and return it as a host object.\n\nSee upload for notes on how arguments are processed.\n\n\n\n"
+    "text": "download{T}(src::OwnedPtr{T})\n\nDownload an object src from the device and return it as a host object.\n\nSee upload for notes on how arguments are processed.\n\n\n\n"
 },
 
 {
@@ -589,7 +589,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Object-based (high-level)",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Type, ::Integer)\nCUDAdrv.Mem.upload{T}(::DevicePtr{T}, ::T)\nCUDAdrv.Mem.download(::DevicePtr)"
+    "text": "CUDAdrv.Mem.alloc(::Type, ::Integer)\nCUDAdrv.Mem.upload{T}(::CUDAdrv.OwnedPtr{T}, ::T)\nCUDAdrv.Mem.download(::CUDAdrv.OwnedPtr)"
 },
 
 {
@@ -685,7 +685,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "CUDAdrv.cudacall",
     "category": "Function",
-    "text": "cudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim, types, values;\n         shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim,\n         shmem::Integer, stream::CuStream,\n         types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (DevicePtr{Cfloat},DevicePtr{Cfloat},DevicePtr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
+    "text": "cudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim, types, values;\n         shmem=0, stream=CuDefaultStream())\ncudacall(f::CuFunction, griddim::CuDim, blockdim::CuDim,\n         shmem::Integer, stream::CuStream,\n         types, values)\n\nccall-like interface for launching a CUDA function f on a GPU.\n\nFor example:\n\nvadd = CuFunction(md, \"vadd\")\na = rand(Float32, 10)\nb = rand(Float32, 10)\nad = CuArray(a)\nbd = CuArray(b)\nc = zeros(Float32, 10)\ncd = CuArray(c)\n\ncudacall(vadd, 10, 1, (Ptr{Cfloat},Ptr{Cfloat},Ptr{Cfloat}), ad, bd, cd)\nc = Array(cd)\n\nThe griddim and blockdim arguments control the launch configuration, and should both consist of either an integer, or a tuple of 1 to 3 integers (omitted dimensions default to 1).\n\nBoth a version with and without keyword arguments is provided, the latter being slightly faster, but not providing default values for the shmem and stream arguments. In addition, the types argument can contain both a tuple of types, and a tuple type, again the former being slightly faster.\n\n\n\n"
 },
 
 {
