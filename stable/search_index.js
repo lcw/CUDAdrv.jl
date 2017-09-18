@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Usage",
     "category": "section",
-    "text": "Quick start:DocTestSetup = quote\n    using CUDAdrv\nenddev = CuDevice(0);\nctx = CuContext(dev);\n\ndestroy!(ctx)\n\n# output\n"
+    "text": "Quick start:DocTestSetup = quote\n    using CUDAdrv\nenddev = CuDevice(0)\nctx = CuContext(dev)\n\n# Code that does GPU computations\n\ndestroy!(ctx)\n\n# output\n"
 },
 
 {
@@ -46,6 +46,62 @@ var documenterSearchIndex = {"docs": [
     "title": "Automatic memory management",
     "category": "section",
     "text": "Except for the encapsulating context, destroy or unload calls are never needed. Objects are registered with the Julia garbage collector, and are automatically finalized when they go out of scope.However, many CUDA API functions implicitly depend on global state, such as the current active context. The wrapper needs to model those dependencies in order for objects not to get destroyed before any dependent object is. If we fail to model these dependency relations, API calls might randomly fail, eg. in the case of a missing context dependency with a INVALID_CONTEXT or CONTEXT_IS_DESTROYED error message.If this seems to be the case, re-run with TRACE=1 and file a bug report."
+},
+
+{
+    "location": "man/usage.html#Arrays-1",
+    "page": "Usage",
+    "title": "Arrays",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "man/usage.html#Device-arrays-1",
+    "page": "Usage",
+    "title": "Device arrays",
+    "category": "section",
+    "text": "Device arrays are called CuArrays, as opposed to regular (CPU) Julia ArraysCuArrays can be initialized with regular Arrays:A   = zeros(Float32,3,4)\nd_A = CuArray(A)The d_ syntax is a conventional way of reminding yourself that the array is allocated on the device.To copy a device array back to the host, usecopy!(A, d_A)You can also invert d_A and A to copy from host to device.Most of the typical Julia functions, like size, ndims, eltype, etc.,  work on CuArrays. One noteworthy omission is that you can't directly index a CuArray: d_A[2,4] will fail. This is not supported because host/device memory transfers are relatively slow, and you don't want to write code that (on the host side) makes use of individual elements in a device array. If you want to inspect the values in a device array, first use copy! to copy it to host memory."
+},
+
+{
+    "location": "man/usage.html#Modules-and-custom-kernels-1",
+    "page": "Usage",
+    "title": "Modules and custom kernels",
+    "category": "section",
+    "text": "This will not teach you about CUDA programming; for that, please refer to the CUDA documentation and other online sources."
+},
+
+{
+    "location": "man/usage.html#Compiling-your-own-modules-1",
+    "page": "Usage",
+    "title": "Compiling your own modules",
+    "category": "section",
+    "text": "You can write and use your own custom kernels, first writing a .cu file and compiling it as a ptx module. On Linux, compilation would look something like this:nvcc -ptx mycudamodule.cuYou can specify that the code should be compiled for compute capability 2.0 devices or higher using:nvcc -ptx -gencode=arch=compute_20,code=sm_20 mycudamodule.cuIf you want to write code that will support multiple datatypes (e.g., Float32 and Float64), it's recommended that you use C++ and write your code using templates. Then use extern C to instantiate bindings for each datatype. For example:template <typename T>\n__device__ void kernel_function1(T *data) {\n    // Code goes here\n}\ntemplate <typename T1, typename T2>\n__device__ void kernel_function2(T1 *data1, T2 *data2) {\n    // Code goes here\n}\n\nextern \"C\"\n{\n    void __global__ kernel_function1_float(float *data) {kernel_function1(data);}\n    void __global__ kernel_function1_double(double *data) {kernel_function1(data);}\n    void __global__ kernel_function2_int_float(int *data1, float *data2) {kernel_function2(data1,data2);}\n}"
+},
+
+{
+    "location": "man/usage.html#Initializing-and-freeing-PTX-modules-1",
+    "page": "Usage",
+    "title": "Initializing and freeing PTX modules",
+    "category": "section",
+    "text": "To easily make your kernels available, the recommended approach is to define something analogous to the following for each ptx module (this example uses the kernels described in the previous section):module MyCudaModule\n\nimport CUDAdrv\nimport CUDAdrv: CuModule, CuModuleFile, CuFunction, cudacall\n\nexport function1\n\nconst ptxdict = Dict()\nconst mdlist = Array{CuModule}(0)\n\nfunction mdinit(devlist)\n    global ptxdict\n    global mdlist\n    isempty(mdlist) || error(\"mdlist is not empty\")\n    for dev in devlist\n        CuDevice(dev)\n        md = CuModuleFile(\"mycudamodule.ptx\")\n\n        ptxdict[(\"function1\", Float32)] = CuFunction(md, \"kernel_function1_float\")\n        ptxdict[(\"function1\", Float64)] = CuFunction(md, \"kernel_function1_double\")\n        ptxdict[(\"function2\", Int32, Float32)] = CuFunction(md, \"kernel_function2_int_float\")\n\n        push!(mdlist, md)\n    end\nend\n\nmdclose() = (empty!(mdlist); empty!(ptxdict))\n\nfunction finit()\n  mdclose()\nend\n\nfunction init(devlist)\n  mdinit(devlist)\nend\n\nfunction function1{T}(griddim::CuDim, blockdim::CuDim, data::CuArray{T})\n    cufunction1 = ptxdict[(\"function1\", T)]\n    cudacall(cufunction1, griddim, blockdim, (Ptr{T},), data)\nend\n\n...\n\nend  # MyCudaModuleUsage will look something like the following:gpuid = 0\ndev = CuDevice(gpuid) # Or the ID of the GPU you want, if you have many of them\nctx = CuContext(dev)\n\nMyCudaModule.init(gpuid)\n# Code that uses functions from your MyCudaModule\nMyCudaModule.finit()\n\ndestroy!(ctx)"
+},
+
+{
+    "location": "man/usage.html#Other-notes-1",
+    "page": "Usage",
+    "title": "Other notes",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "man/usage.html#Notes-on-memory-1",
+    "page": "Usage",
+    "title": "Notes on memory",
+    "category": "section",
+    "text": "Julia convention is that matrices are stored in column-major order, whereas C (and CUDA) use row-major. For efficiency this wrapper avoids reordering memory, so that the linear sequence of addresses is the same between main memory and the GPU. For most usages, this is probably what you want.However, for the purposes of linear algebra, this effectively means that one is storing the transpose of matrices on the GPU. Keep this in mind when manipulating code on your GPU kernels."
 },
 
 {
