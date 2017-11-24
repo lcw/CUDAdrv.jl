@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Usage",
     "category": "section",
-    "text": "Quick start:DocTestSetup = quote\n    using CUDAdrv\nenddev = CuDevice(0)\nctx = CuContext(dev)\n\n# Code that does GPU computations\n\ndestroy!(ctx)\n\n# output\n"
+    "text": "Quick start:using CUDAdrv\n\ndev = CuDevice(0)\nctx = CuContext(dev)\n\n# code that does GPU computations\n\ndestroy!(ctx)\n\n# output\nDocTestSetup = quote\n    using CUDAdrv\n\n    dev = CuDevice(0)\n    ctx = CuContext(dev)\nend"
 },
 
 {
@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Device arrays",
     "category": "section",
-    "text": "Device arrays are called CuArrays, as opposed to regular (CPU) Julia ArraysCuArrays can be initialized with regular Arrays:A   = zeros(Float32,3,4)\nd_A = CuArray(A)The d_ syntax is a conventional way of reminding yourself that the array is allocated on the device.To copy a device array back to the host, usecopy!(A, d_A)You can also invert d_A and A to copy from host to device.Most of the typical Julia functions, like size, ndims, eltype, etc.,  work on CuArrays. One noteworthy omission is that you can't directly index a CuArray: d_A[2,4] will fail. This is not supported because host/device memory transfers are relatively slow, and you don't want to write code that (on the host side) makes use of individual elements in a device array. If you want to inspect the values in a device array, first use copy! to copy it to host memory."
+    "text": "Device arrays are called CuArrays, as opposed to regular (CPU) Julia ArraysCuArrays can be initialized with regular Arrays:A   = zeros(Float32,3,4)\nd_A = CuArray(A)\n\n# output\n\n3×4 Array{Float32,2}:\n 0.0  0.0  0.0  0.0\n 0.0  0.0  0.0  0.0\n 0.0  0.0  0.0  0.0The d_ syntax is a conventional way of reminding yourself that the array is allocated on the device.DocTestSetup = quote\n    using CUDAdrv\n\n    dev = CuDevice(0)\n    ctx = CuContext(dev)\n\n    A   = zeros(Float32,3,4)\n    d_A = CuArray(A)\nendTo copy a device array back to the host, use:copy!(A, d_A)\n\n# output\n\n3×4 Array{Float32,2}:\n 0.0  0.0  0.0  0.0\n 0.0  0.0  0.0  0.0\n 0.0  0.0  0.0  0.0You can also invert d_A and A to copy from host to device.Most of the typical Julia functions, like size, ndims, eltype, etc.,  work on CuArrays. One noteworthy omission is that you can't directly index a CuArray: d_A[2,4] will fail. This is not supported because host/device memory transfers are relatively slow, and you don't want to write code that (on the host side) makes use of individual elements in a device array. If you want to inspect the values in a device array, first use copy! to copy it to host memory."
 },
 
 {
@@ -521,11 +521,83 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/api.html#CUDAdrv.Mem.alloc",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.alloc",
+    "category": "Function",
+    "text": "Allocate linear memory on the device and return a buffer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory will not be freed automatically, use free(::Buffer) for that.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.free",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.free",
+    "category": "Function",
+    "text": "Free device memory.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.set!",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.set!",
+    "category": "Function",
+    "text": "Initialize device memory with a repeating value.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.upload",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.upload",
+    "category": "Function",
+    "text": "Upload memory from host to device. Executed asynchronously on stream if async is true.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.upload!",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.upload!",
+    "category": "Function",
+    "text": "Upload memory from host to device. Executed asynchronously on stream if async is true.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.download",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.download",
+    "category": "Function",
+    "text": "Download memory from device to host. Executed asynchronously on stream if async is true.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.download!",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.download!",
+    "category": "Function",
+    "text": "Download memory from device to host. Executed asynchronously on stream if async is true.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.transfer",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.transfer",
+    "category": "Function",
+    "text": "Transfer memory from device to device. Executed asynchronously on stream if async is true.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.transfer!",
+    "page": "API wrappers",
+    "title": "CUDAdrv.Mem.transfer!",
+    "category": "Function",
+    "text": "Transfer memory from device to device. Executed asynchronously on stream if async is true.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/api.html#Memory-Management-1",
     "page": "API wrappers",
     "title": "Memory Management",
     "category": "section",
-    "text": ""
+    "text": "CUDAdrv.Mem.alloc\nCUDAdrv.Mem.free\nCUDAdrv.Mem.set!\nCUDAdrv.Mem.upload\nCUDAdrv.Mem.upload!\nCUDAdrv.Mem.download\nCUDAdrv.Mem.download!\nCUDAdrv.Mem.transfer\nCUDAdrv.Mem.transfer!"
 },
 
 {
@@ -566,54 +638,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Memory info",
     "category": "section",
     "text": "CUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()"
-},
-
-{
-    "location": "lib/api.html#Low-level:-pointer-based-1",
-    "page": "API wrappers",
-    "title": "Low-level: pointer based",
-    "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::CUDAdrv.Buffer)\nCUDAdrv.Mem.set!\nCUDAdrv.Mem.upload!(::CUDAdrv.Buffer, ::Ref, ::Integer)\nCUDAdrv.Mem.download!(::Ref, ::CUDAdrv.Buffer, ::Integer)\nCUDAdrv.Mem.transfer!"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{AbstractArray}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.alloc",
-    "category": "Method",
-    "text": "alloc(src::AbstractArray)\n\nAllocate space to store the contents of src.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.upload-Tuple{AbstractArray}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.upload",
-    "category": "Method",
-    "text": "upload(src::AbstractArray)::Buffer\n\nAllocates space for and uploads the contents of an array src, returning a Buffer. Cannot be executed asynchronously due to the synchronous allocation.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.upload!-Tuple{CUDAdrv.Buffer,AbstractArray}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.upload!",
-    "category": "Method",
-    "text": "upload!(dst::Buffer, src::AbstractArray, [stream=CuDefaultStream()]; async=false)\n\nUpload the contents of an array src to dst.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.download!-Tuple{AbstractArray,CUDAdrv.Buffer}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.download!",
-    "category": "Method",
-    "text": "download!(dst::AbstractArray, src::Buffer, [stream=CuDefaultStream()]; async=false)\n\nDownloads memory from src to the array at dst. The amount of memory downloaded is determined by calling sizeof on the array, so it needs to be properly preallocated.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#High-level:-array-and-type-based-1",
-    "page": "API wrappers",
-    "title": "High-level: array and type based",
-    "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::AbstractArray)\nCUDAdrv.Mem.upload(::AbstractArray)\nCUDAdrv.Mem.upload!(::CUDAdrv.Buffer, ::AbstractArray)\nCUDAdrv.Mem.download!(::AbstractArray, ::CUDAdrv.Buffer)CUDAdrv.Mem.alloc(::Type, Integer)\nCUDAdrv.Mem.download(::Type, ::CUDAdrv.Buffer, Integer)"
 },
 
 {
