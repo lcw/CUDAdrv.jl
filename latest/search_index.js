@@ -529,22 +529,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{Integer}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.alloc",
-    "category": "Method",
-    "text": "alloc(bytes::Integer)\n\nAllocates bytesize bytes of linear memory on the device and returns a pointer to the allocated memory. The allocated memory is suitably aligned for any kind of variable. The memory is not cleared, use free(::OwnedPtr) for that.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.free-Tuple{CUDAdrv.OwnedPtr}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.free",
-    "category": "Method",
-    "text": "free(p::OwnedPtr)\n\nFrees device memory.\n\n\n\n"
-},
-
-{
     "location": "lib/api.html#CUDAdrv.Mem.info",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.info",
@@ -577,75 +561,59 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.set",
+    "location": "lib/api.html#Memory-info-1",
     "page": "API wrappers",
-    "title": "CUDAdrv.Mem.set",
-    "category": "Function",
-    "text": "set(p::OwnedPtr, value::Cuint, len::Integer)\n\nInitializes device memory, copying the value val for len times.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.upload-Tuple{CUDAdrv.OwnedPtr,Ref,Integer}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.upload",
-    "category": "Method",
-    "text": "upload(dst::OwnedPtr, src, nbytes::Integer)\n\nUpload nbytes memory from src at the host to dst on the device.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{Ref,CUDAdrv.OwnedPtr,Integer}",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.download",
-    "category": "Method",
-    "text": "download(dst::OwnedPtr, src, nbytes::Integer)\n\nDownload nbytes memory from src on the device to src on the host.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#CUDAdrv.Mem.transfer",
-    "page": "API wrappers",
-    "title": "CUDAdrv.Mem.transfer",
-    "category": "Function",
-    "text": "download(dst::OwnedPtr, src, nbytes::Integer)\n\nTransfer nbytes of device memory from src to dst.\n\n\n\n"
-},
-
-{
-    "location": "lib/api.html#Pointer-based-(low-level)-1",
-    "page": "API wrappers",
-    "title": "Pointer-based (low-level)",
+    "title": "Memory info",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::CUDAdrv.OwnedPtr)\nCUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()\nCUDAdrv.Mem.set\nCUDAdrv.Mem.upload(::CUDAdrv.OwnedPtr, ::Ref, ::Integer)\nCUDAdrv.Mem.download(::Ref, ::CUDAdrv.OwnedPtr, ::Integer)\nCUDAdrv.Mem.transfer"
+    "text": "CUDAdrv.Mem.info\nCUDAdrv.Mem.total\nCUDAdrv.Mem.used\nCUDAdrv.Mem.free()"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{Type,Integer}",
+    "location": "lib/api.html#Low-level:-pointer-based-1",
+    "page": "API wrappers",
+    "title": "Low-level: pointer based",
+    "category": "section",
+    "text": "CUDAdrv.Mem.alloc(::Integer)\nCUDAdrv.Mem.free(::CUDAdrv.Buffer)\nCUDAdrv.Mem.set!\nCUDAdrv.Mem.upload!(::CUDAdrv.Buffer, ::Ref, ::Integer)\nCUDAdrv.Mem.download!(::Ref, ::CUDAdrv.Buffer, ::Integer)\nCUDAdrv.Mem.transfer!"
+},
+
+{
+    "location": "lib/api.html#CUDAdrv.Mem.alloc-Tuple{AbstractArray}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.alloc",
     "category": "Method",
-    "text": "alloc{T}(len=1)\n\nAllocates space for len objects of type T on the device and returns a pointer to the allocated memory. The memory is not cleared, use free(::OwnedPtr) for that.\n\n\n\n"
+    "text": "alloc(src::AbstractArray)\n\nAllocate space to store the contents of src.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.upload-Union{Tuple{CUDAdrv.OwnedPtr{T},T}, Tuple{T}} where T",
+    "location": "lib/api.html#CUDAdrv.Mem.upload-Tuple{AbstractArray}",
     "page": "API wrappers",
     "title": "CUDAdrv.Mem.upload",
     "category": "Method",
-    "text": "upload{T}(src::T)\nupload{T}(dst::OwnedPtr{T}, src::T)\n\nUpload an object src from the host to the device. If a destination dst is not provided, new memory is allocated and uploaded to.\n\nNote this does only upload the object itself, and does not peek through it in order to get to the underlying data (like Ref does). Consequently, this functionality should not be used to transfer eg. arrays, use CuArray's copy! functionality for that.\n\n\n\n"
+    "text": "upload(src::AbstractArray)::Buffer\n\nAllocates space for and uploads the contents of an array src, returning a Buffer. Cannot be executed asynchronously due to the synchronous allocation.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.Mem.download-Tuple{CUDAdrv.OwnedPtr}",
+    "location": "lib/api.html#CUDAdrv.Mem.upload!-Tuple{CUDAdrv.Buffer,AbstractArray}",
     "page": "API wrappers",
-    "title": "CUDAdrv.Mem.download",
+    "title": "CUDAdrv.Mem.upload!",
     "category": "Method",
-    "text": "download{T}(src::OwnedPtr{T})\n\nDownload an object src from the device and return it as a host object.\n\nSee upload for notes on how arguments are processed.\n\n\n\n"
+    "text": "upload!(dst::Buffer, src::AbstractArray, [stream=CuDefaultStream()]; async=false)\n\nUpload the contents of an array src to dst.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#Object-based-(high-level)-1",
+    "location": "lib/api.html#CUDAdrv.Mem.download!-Tuple{AbstractArray,CUDAdrv.Buffer}",
     "page": "API wrappers",
-    "title": "Object-based (high-level)",
+    "title": "CUDAdrv.Mem.download!",
+    "category": "Method",
+    "text": "download!(dst::AbstractArray, src::Buffer, [stream=CuDefaultStream()]; async=false)\n\nDownloads memory from src to the array at dst. The amount of memory downloaded is determined by calling sizeof on the array, so it needs to be properly preallocated.\n\n\n\n"
+},
+
+{
+    "location": "lib/api.html#High-level:-array-and-type-based-1",
+    "page": "API wrappers",
+    "title": "High-level: array and type based",
     "category": "section",
-    "text": "CUDAdrv.Mem.alloc(::Type, ::Integer)\nCUDAdrv.Mem.upload{T}(::CUDAdrv.OwnedPtr{T}, ::T)\nCUDAdrv.Mem.download(::CUDAdrv.OwnedPtr)"
+    "text": "CUDAdrv.Mem.alloc(::AbstractArray)\nCUDAdrv.Mem.upload(::AbstractArray)\nCUDAdrv.Mem.upload!(::CUDAdrv.Buffer, ::AbstractArray)\nCUDAdrv.Mem.download!(::AbstractArray, ::CUDAdrv.Buffer)CUDAdrv.Mem.alloc(::Type, Integer)\nCUDAdrv.Mem.download(::Type, ::CUDAdrv.Buffer, Integer)"
 },
 
 {
@@ -845,7 +813,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Arrays",
     "title": "Core.Array",
     "category": "Method",
-    "text": "Array{T}(g::CuArray{T})\n\nTransfer a device array src to host, returning an Array.\n\n\n\n"
+    "text": "Array{T}(src::CuArray{T})\n\nTransfer a device array src to host, returning an Array.\n\n\n\n"
 },
 
 {
