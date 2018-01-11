@@ -473,19 +473,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.addData",
+    "location": "lib/api.html#CUDAdrv.add_data!",
     "page": "API wrappers",
-    "title": "CUDAdrv.addData",
+    "title": "CUDAdrv.add_data!",
     "category": "Function",
-    "text": "addData(link::CuLink, name::String, data, type::CUjit_input)\n\nAdd data to a link operation. The argument typ indicates the type of the data.\n\n\n\n"
+    "text": "add_data!(link::CuLink, name::String, code::String)\n\nAdd PTX code to a pending link operation.\n\n\n\nadd_data!(link::CuLink, name::String, data::Vector{UInt8}, type::CUjit_input)\n\nAdd object code to a pending link operation.\n\n\n\n"
 },
 
 {
-    "location": "lib/api.html#CUDAdrv.addFile",
+    "location": "lib/api.html#CUDAdrv.add_file!",
     "page": "API wrappers",
-    "title": "CUDAdrv.addFile",
+    "title": "CUDAdrv.add_file!",
     "category": "Function",
-    "text": "addFile(link::CuLink, path::String, typ::CUjit_input)\n\nAdd data from a file to a link operation. The argument typ indicates the type of the contained data.\n\n\n\n"
+    "text": "add_file!(link::CuLink, path::String, typ::CUjit_input)\n\nAdd data from a file to a link operation. The argument typ indicates the type of the contained data.\n\n\n\n"
 },
 
 {
@@ -517,7 +517,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API wrappers",
     "title": "Linker",
     "category": "section",
-    "text": "CUDAdrv.CuLink\nCUDAdrv.addData\nCUDAdrv.addFile\nCUDAdrv.CuLinkImage\nCUDAdrv.complete\nCUDAdrv.CuModule(::CUDAdrv.CuLinkImage, args...)"
+    "text": "CUDAdrv.CuLink\nCUDAdrv.add_data!\nCUDAdrv.add_file!\nCUDAdrv.CuLinkImage\nCUDAdrv.complete\nCUDAdrv.CuModule(::CUDAdrv.CuLinkImage, args...)"
 },
 
 {
