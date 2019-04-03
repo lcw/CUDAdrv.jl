@@ -49,7 +49,7 @@ internal kernel parameter buffer, or a pointer to device memory.
 
 This is a low-level call, prefer to use [`cudacall`](@ref) instead.
 """
-@inline function launch(f::CuFunction, blocks::CuDim, threads::CuDim,
+@inline function launch(f::CuFunction, cg::Bool, blocks::CuDim, threads::CuDim,
                         shmem::Int, stream::CuStream,
                         args...)
     blocks = CuDim3(blocks)
@@ -57,12 +57,12 @@ This is a low-level call, prefer to use [`cudacall`](@ref) instead.
     (blocks.x>0 && blocks.y>0 && blocks.z>0)    || throw(ArgumentError("Grid dimensions should be non-null"))
     (threads.x>0 && threads.y>0 && threads.z>0) || throw(ArgumentError("Block dimensions should be non-null"))
 
-    _launch(f, blocks, threads, shmem, stream, args...)
+    _launch(f, cg, blocks, threads, shmem, stream, args...)
 end
 
 # we need a generated function to get an args array,
 # without having to inspect the types at runtime
-@generated function _launch(f::CuFunction, blocks::CuDim3, threads::CuDim3,
+@generated function _launch(f::CuFunction, cg::Bool, blocks::CuDim3, threads::CuDim3,
                             shmem::Int, stream::CuStream,
                             args...)
     all(isbitstype, args) || throw(ArgumentError("Arguments to kernel should be bitstype."))
@@ -85,23 +85,37 @@ end
     # generate an array with pointers
     arg_ptrs = [:(Base.unsafe_convert(Ptr{Cvoid}, $(arg_refs[i]))) for i in 1:length(args)]
 
-    append!(ex.args, (quote
-        GC.@preserve $(arg_refs...) begin
-            kernelParams = [$(arg_ptrs...)]
-            @apicall(:cuLaunchKernel, (
-                CuFunction_t,           # function
-                Cuint, Cuint, Cuint,    # grid dimensions (x, y, z)
-                Cuint, Cuint, Cuint,    # block dimensions (x, y, z)
-                Cuint,                  # shared memory bytes,
-                CuStream_t,             # stream
-                Ptr{Ptr{Cvoid}},        # kernel parameters
-                Ptr{Ptr{Cvoid}}),       # extra parameters
-                f,
-                blocks.x, blocks.y, blocks.z,
-                threads.x, threads.y, threads.z,
-                shmem, stream, kernelParams, C_NULL)
-        end
-    end).args)
+        append!(ex.args, (quote
+            GC.@preserve $(arg_refs...) begin
+                kernelParams = [$(arg_ptrs...)]
+                if cg  # Note that cooperative kernel has 1 less arguments.
+                    @apicall(:cuLaunchCooperativeKernel, (
+                        CuFunction_t,           # function
+                        Cuint, Cuint, Cuint,    # grid dimensions (x, y, z)
+                        Cuint, Cuint, Cuint,    # block dimensions (x, y, z)
+                        Cuint,                  # shared memory bytes,
+                        CuStream_t,             # stream
+                        Ptr{Ptr{Cvoid}}),        # kernel parameters
+                        f,
+                        blocks.x, blocks.y, blocks.z,
+                        threads.x, threads.y, threads.z,
+                        shmem, stream, kernelParams)
+                else
+                    @apicall(:cuLaunchKernel, (
+                        CuFunction_t,           # function
+                        Cuint, Cuint, Cuint,    # grid dimensions (x, y, z)
+                        Cuint, Cuint, Cuint,    # block dimensions (x, y, z)
+                        Cuint,                  # shared memory bytes,
+                        CuStream_t,             # stream
+                        Ptr{Ptr{Cvoid}},        # kernel parameters
+                        Ptr{Ptr{Cvoid}}),       # extra parameters
+                        f,
+                        blocks.x, blocks.y, blocks.z,
+                        threads.x, threads.y, threads.z,
+                        shmem, stream, kernelParams, C_NULL)
+                end
+            end
+        end).args)
 
     return ex
 end
@@ -150,7 +164,7 @@ end
 # we need a generated function to get a tuple of converted arguments (using unsafe_convert),
 # without having to inspect the types at runtime
 @generated function _cudacall(f::CuFunction, tt::Type, args...;
-                              blocks::CuDim=1, threads::CuDim=1,
+                              cg::Bool=false, blocks::CuDim=1, threads::CuDim=1,
                               shmem::Integer=0, stream::CuStream=CuDefaultStream())
     types = tt.parameters[1].parameters     # the type of `tt` is Type{Tuple{<:DataType...}}
 
@@ -171,7 +185,7 @@ end
 
     append!(ex.args, (quote
         GC.@preserve $(converted_args...) begin
-            launch(f, blocks, threads, shmem, stream, ($(arg_ptrs...)))
+            launch(f, cg, blocks, threads, shmem, stream, ($(arg_ptrs...)))
         end
     end).args)
 
